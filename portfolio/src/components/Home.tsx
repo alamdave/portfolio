@@ -2,11 +2,9 @@ import React from "react";
 
 const Home: React.FC = () => {
   return (
-    <div id="home">
-      <img
-        className=""
-        src="https://png.pngtree.com/thumb_back/fh260/background/20210324/pngtree-abstract-playful-portfolio-pink-memphis-image_593415.jpg"
-      ></img>
+    <div>
+      <div className="bg-hero-pattern w-full h-screen bg-repeat "></div>
+      <footer className="bg-footer-texture py-4"></footer>
     </div>
   );
 };

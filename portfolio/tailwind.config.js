@@ -2,7 +2,12 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        "hero-pattern": "url('/images/hero-pattern.svg')",
+        "footer-texture": "url('/images/footer-texture.png')",
+      },
+    },
   },
   plugins: [],
 };
