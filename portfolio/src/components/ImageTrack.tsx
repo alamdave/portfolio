@@ -16,6 +16,27 @@ const ImageTrack: React.FC = () => {
     const track = trackRef.current;
     if (!track) return;
 
+    const animateTrack = (nextPercentage: number) => {
+      if (!isAnimating) {
+        isAnimating = true;
+        requestAnimationFrame(() => {
+          track.animate(
+            { transform: `translate(${nextPercentage}%, -50%)` },
+            { duration: 1200, fill: "forwards" }
+          );
+
+          const images = track.getElementsByClassName("image");
+          for (const image of images) {
+            (image as HTMLElement).animate(
+              { objectPosition: `${100 + nextPercentage}% center` },
+              { duration: 1200, fill: "forwards" }
+            );
+          }
+          isAnimating = false;
+        });
+      }
+    };
+
     const handleMouseDown = (e: MouseEvent | TouchEvent) => {
       const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
       track.dataset.mouseDownAt = `${clientX}`;
@@ -42,25 +63,7 @@ const ImageTrack: React.FC = () => {
       );
 
       track.dataset.percentage = `${nextPercentage}`;
-
-      if (!isAnimating) {
-        isAnimating = true;
-        requestAnimationFrame(() => {
-          track.animate(
-            { transform: `translate(${nextPercentage}%, -50%)` },
-            { duration: 1200, fill: "forwards" }
-          );
-
-          const images = track.getElementsByClassName("image");
-          for (const image of images) {
-            (image as HTMLElement).animate(
-              { objectPosition: `${100 + nextPercentage}% center` },
-              { duration: 1200, fill: "forwards" }
-            );
-          }
-          isAnimating = false;
-        });
-      }
+      animateTrack(nextPercentage);
     };
 
     const handleScroll = (e: WheelEvent) => {
@@ -73,25 +76,7 @@ const ImageTrack: React.FC = () => {
       nextPercentage = Math.max(Math.min(nextPercentage, 0), -100);
 
       track.dataset.percentage = `${nextPercentage}`;
-
-      if (!isAnimating) {
-        isAnimating = true;
-        requestAnimationFrame(() => {
-          track.animate(
-            { transform: `translate(${nextPercentage}%, -50%)` },
-            { duration: 1200, fill: "forwards" }
-          );
-
-          const images = track.getElementsByClassName("image");
-          for (const image of images) {
-            (image as HTMLElement).animate(
-              { objectPosition: `${100 + nextPercentage}% center` },
-              { duration: 1200, fill: "forwards" }
-            );
-          }
-          isAnimating = false;
-        });
-      }
+      animateTrack(nextPercentage);
 
       // Allow normal scrolling if the track is at either end
       if (nextPercentage === 0 || nextPercentage === -100) {
