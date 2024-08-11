@@ -18,7 +18,7 @@ const SideNav: React.FC = () => {
     <div>
       <GiHamburgerMenu
         onClick={handleNav}
-        className="absolute top-4 right-4 z-[99] md:hidden"
+        className="absolute top-4 right-4 z-[99] md:hidden fill-slate-300"
       ></GiHamburgerMenu>
       {nav ? (
         <div className="fixed w-full h-screen bg-white/90 flex flex-col justify-center items-center z-20">
