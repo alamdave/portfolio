@@ -7,117 +7,115 @@ const ImageTrack: React.FC = () => {
     "https://images.unsplash.com/photo-1549928619-dec5c56266eb?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "https://images.unsplash.com/photo-1550353175-a3611868086b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "https://images.unsplash.com/photo-1551482850-d649f078ed01?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1695221087406-257eca10a2e7?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1723145886817-1a2ee70a251b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1723083661302-ca5b3459e278?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   ];
 
   const trackRef = useRef<HTMLDivElement>(null);
-  let isAnimating = false;
 
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
 
-    const animateTrack = (nextPercentage: number) => {
-      if (!isAnimating) {
-        isAnimating = true;
-        requestAnimationFrame(() => {
-          track.animate(
-            { transform: `translate(${nextPercentage}%, -50%)` },
-            { duration: 1200, fill: "forwards" }
-          );
-
-          const images = track.getElementsByClassName("image");
-          for (const image of images) {
-            (image as HTMLElement).animate(
-              { objectPosition: `${100 + nextPercentage}% center` },
-              { duration: 1200, fill: "forwards" }
-            );
-          }
-          isAnimating = false;
-        });
-      }
+    const handleOnDown = (e: MouseEvent | TouchEvent) => {
+      const clientX = "clientX" in e ? e.clientX : e.touches[0].clientX;
+      track.dataset.mouseDownAt = clientX.toString();
     };
 
-    const handleEvent = (e: MouseEvent | TouchEvent | WheelEvent) => {
+    const handleOnUp = () => {
+      track.dataset.mouseDownAt = "0";
+      track.dataset.prevPercentage = track.dataset.percentage || "0";
+    };
+
+    const handleOnMove = (e: MouseEvent | TouchEvent | WheelEvent) => {
+      let nextPercentage: number;
       if (e instanceof WheelEvent) {
-        e.preventDefault();
         const deltaY = e.deltaY;
         const prevPercentage = parseFloat(track.dataset.percentage || "0");
 
-        let nextPercentage =
-          prevPercentage + (deltaY / window.innerHeight) * -100;
-        nextPercentage = Math.max(Math.min(nextPercentage, 0), -100);
+        nextPercentage = prevPercentage + (deltaY / window.innerWidth) * -100;
 
-        track.dataset.percentage = `${nextPercentage}`;
-        animateTrack(nextPercentage);
-
-        // Allow normal scrolling if the track is at either end
         if (nextPercentage === 0 || nextPercentage === -100) {
-          window.removeEventListener("wheel", handleEvent as EventListener);
+          window.removeEventListener("wheel", handleOnMove as EventListener);
           window.scrollBy(0, deltaY);
           setTimeout(() => {
-            window.addEventListener("wheel", handleEvent as EventListener, {
+            window.addEventListener("wheel", handleOnMove as EventListener, {
               passive: false,
             });
           }, 1200);
         }
       } else {
-        const isTouchEvent = "touches" in e;
-        const clientX = isTouchEvent
-          ? e.touches[0].clientX
-          : (e as MouseEvent).clientX;
+        if (track.dataset.mouseDownAt === "0") return;
 
-        if (e.type === "mousedown" || e.type === "touchstart") {
-          track.dataset.mouseDownAt = `${clientX}`;
-        } else if (e.type === "mouseup" || e.type === "touchend") {
-          track.dataset.mouseDownAt = "0";
-          track.dataset.prevPercentage = track.dataset.percentage || "0";
-        } else if (e.type === "mousemove" || e.type === "touchmove") {
-          if (track.dataset.mouseDownAt === "0") return;
+        const clientX = "clientX" in e ? e.clientX : e.touches[0].clientX;
 
-          const mouseDelta =
-            parseFloat(track.dataset.mouseDownAt || "0") - clientX;
-          const maxDelta = window.innerWidth / 2;
+        const mouseDelta =
+          parseFloat(track.dataset.mouseDownAt || "0") - clientX;
 
-          const percentage = (mouseDelta / maxDelta) * -100;
-          const unweightedNextPercentage =
-            parseFloat(track.dataset.prevPercentage || "0") + percentage;
-          let nextPercentage = Math.max(
-            Math.min(unweightedNextPercentage, 0),
-            -100
-          );
+        const maxDelta = window.outerWidth / 2;
 
-          track.dataset.percentage = `${nextPercentage}`;
-          animateTrack(nextPercentage);
-        }
+        const percentage = (mouseDelta / maxDelta) * -100;
+
+        nextPercentage =
+          parseFloat(track.dataset.prevPercentage || "0") + percentage;
+      }
+
+      nextPercentage = Math.max(Math.min(nextPercentage, 0), -100);
+
+      track.dataset.percentage = String(nextPercentage);
+
+      track.animate(
+        { transform: `translate(${nextPercentage}%, -50%)` },
+        { duration: 1200, fill: "forwards" }
+      );
+
+      const images = track.getElementsByClassName("image");
+      for (const image of images) {
+        (image as HTMLElement).animate(
+          { objectPosition: `${100 + nextPercentage}% center` },
+          { duration: 1200, fill: "forwards" }
+        );
       }
     };
 
-    window.addEventListener("mousedown", handleEvent as EventListener);
-    window.addEventListener("mouseup", handleEvent as EventListener);
-    window.addEventListener("mousemove", handleEvent as EventListener);
-    window.addEventListener("touchstart", handleEvent as EventListener);
-    window.addEventListener("touchend", handleEvent as EventListener);
-    window.addEventListener("touchmove", handleEvent as EventListener);
-    window.addEventListener("wheel", handleEvent as EventListener, {
+    const handleMouseDown = (e: MouseEvent) => handleOnDown(e);
+    const handleTouchStart = (e: TouchEvent) => handleOnDown(e);
+
+    const handleMouseUp = () => handleOnUp();
+    const handleTouchEnd = () => handleOnUp();
+
+    const handleMouseMove = (e: MouseEvent) => handleOnMove(e);
+    const handleTouchMove = (e: TouchEvent) => handleOnMove(e);
+
+    window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("touchstart", handleTouchStart);
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("touchend", handleTouchEnd);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove);
+
+    window.addEventListener("wheel", handleOnMove as EventListener, {
       passive: false,
     });
 
     return () => {
-      window.removeEventListener("mousedown", handleEvent as EventListener);
-      window.removeEventListener("mouseup", handleEvent as EventListener);
-      window.removeEventListener("mousemove", handleEvent as EventListener);
-      window.removeEventListener("touchstart", handleEvent as EventListener);
-      window.removeEventListener("touchend", handleEvent as EventListener);
-      window.removeEventListener("touchmove", handleEvent as EventListener);
-      window.removeEventListener("wheel", handleEvent as EventListener);
+      window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
+
+      window.removeEventListener("wheel", handleOnMove as EventListener);
     };
-  }, []); // Empty dependency array to run only once on mount
+  }, []);
 
   return (
     <div
       ref={trackRef}
       id="ImageTrack"
-      className="flex gap-[2vmin] absolute left-[10%] top-[40%] translate-x-[0%] translate-y-[-50%]"
+      className="flex gap-[2vmin] absolute left-[10%] top-[40%] transform translate-y-[-50%] select-none"
       data-mouse-down-at="0"
       data-prev-percentage="0"
     >
@@ -126,7 +124,7 @@ const ImageTrack: React.FC = () => {
           key={index}
           src={image}
           alt={`image ${index + 1}`}
-          className="image w-[32vmin] h-[46vmin] object-cover object-left-[50%] object-right-[50%]"
+          className="image w-[32vmin] h-[46vmin] object-cover object-center"
           draggable="false"
         />
       ))}
