@@ -18,6 +18,17 @@ const ImageTrack: React.FC = () => {
     const track = trackRef.current;
     if (!track) return;
 
+    // Calculate the total width of the track based on the number of images
+    const imageWidth = 40; // vmin
+    const gapWidth = 1; // vmin
+    const totalWidth = (imageWidth + gapWidth) * images.length - gapWidth;
+
+    // Set the width of the track
+    track.style.width = `${totalWidth}vmin`;
+
+    // Scroll to the right
+    //track.scrollLeft = track.scrollWidth;
+
     const handleOnDown = (e: MouseEvent | TouchEvent) => {
       const clientX = "clientX" in e ? e.clientX : e.touches[0].clientX;
       track.dataset.mouseDownAt = clientX.toString();
@@ -57,24 +68,26 @@ const ImageTrack: React.FC = () => {
 
         const percentage = (mouseDelta / maxDelta) * -100;
 
+        const scalingFactor = 0.3; // Adjust this value as needed
         nextPercentage =
-          parseFloat(track.dataset.prevPercentage || "0") + percentage;
+          parseFloat(track.dataset.prevPercentage || "0") +
+          percentage * scalingFactor;
       }
 
-      nextPercentage = Math.max(Math.min(nextPercentage, 0), -100);
+      nextPercentage = Math.max(Math.min(nextPercentage, 0), -85);
 
       track.dataset.percentage = String(nextPercentage);
 
       track.animate(
         { transform: `translate(${nextPercentage}%, -50%)` },
-        { duration: 1200, fill: "forwards" }
+        { duration: 1500, fill: "forwards" }
       );
 
       const images = track.getElementsByClassName("image");
       for (const image of images) {
         (image as HTMLElement).animate(
           { objectPosition: `${100 + nextPercentage}% center` },
-          { duration: 1200, fill: "forwards" }
+          { duration: 1500, fill: "forwards" }
         );
       }
     };
@@ -115,7 +128,7 @@ const ImageTrack: React.FC = () => {
     <div
       ref={trackRef}
       id="ImageTrack"
-      className="flex gap-[2vmin] absolute left-[10%] top-[40%] transform translate-y-[-50%] select-none"
+      className="flex gap-[4vmin] absolute left-[10%] top-[40%] transform translate-y-[-50%] select-none"
       data-mouse-down-at="0"
       data-prev-percentage="0"
     >
@@ -124,7 +137,7 @@ const ImageTrack: React.FC = () => {
           key={index}
           src={image}
           alt={`image ${index + 1}`}
-          className="image w-[32vmin] h-[46vmin] object-cover object-center"
+          className="image w-[40vmin] h-[56vmin] object-cover object-center"
           draggable="false"
         />
       ))}
