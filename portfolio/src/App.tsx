@@ -1,20 +1,25 @@
-import { useState } from "react";
-import SideNav from "./components/SideNav";
-import Home from "./components/Home";
-import ImageTrack from "./components/ImageTrack";
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import MainLayout from "./layouts/MainLayout";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Projects from "./pages/Projects";
+import Contact from "./pages/Contact";
 
-function App() {
+const App: React.FC = () => {
   return (
-    <main className="bg-hero-pattern w-full h-screen bg-repeat px-10 overflow-x-hidden">
-      <section className="min-h-screen">
-        <div className="card overflow-hidden h-screen overflow-y-hidden">
-          <ImageTrack />
-          <footer className="bg-footer-texture py-4"></footer>
-          <Home />
-        </div>
-      </section>
-    </main>
+    <Router>
+      <MainLayout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/projects" element={<Projects />} />
+          <Route path="/contact" element={<Contact />} />
+          {/* Add more routes as needed */}
+        </Routes>
+      </MainLayout>
+    </Router>
   );
-}
+};
 
 export default App;

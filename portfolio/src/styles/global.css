@@ -1,0 +1,42 @@
+/* globals.css */
+
+/* Import Tailwind base styles */
+@import "./tailwind.css";
+
+/* Global resets or custom global styles can go here */
+
+/* Example: Reset margin and padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Example: Global font settings */
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f8fafc; /* Tailwind's gray-100 */
+  color: #1f2937; /* Tailwind's gray-800 */
+}
+
+/* Custom global utility classes (if needed) */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Example: Utility class for section padding */
+.section-padding {
+  padding: 4rem 1rem;
+}
+
+/* Example: Global link styles */
+a {
+  color: #3b82f6; /* Tailwind's blue-500 */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

@@ -1,33 +1,27 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-const ImageTrack: React.FC = () => {
-  const images = [
-    "https://images.unsplash.com/photo-1550007345-dcdff81aa558?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1549999740-0ae979bd6523?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1549928619-dec5c56266eb?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1550353175-a3611868086b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1551482850-d649f078ed01?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1695221087406-257eca10a2e7?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1723145886817-1a2ee70a251b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    "https://images.unsplash.com/photo-1723083661302-ca5b3459e278?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  ];
+interface ImageTrackProps {
+  images: string[];
+  imageWidth?: number;
+  gapWidth?: number;
+  scalingFactor?: number;
+}
 
+const ImageTrack: React.FC<ImageTrackProps> = ({
+  images,
+  imageWidth = 40,
+  gapWidth = 4,
+  scalingFactor = 0.3,
+}) => {
   const trackRef = useRef<HTMLDivElement>(null);
+  const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
 
-    // Calculate the total width of the track based on the number of images
-    const imageWidth = 40; // vmin
-    const gapWidth = 1; // vmin
     const totalWidth = (imageWidth + gapWidth) * images.length - gapWidth;
-
-    // Set the width of the track
     track.style.width = `${totalWidth}vmin`;
-
-    // Scroll to the right
-    //track.scrollLeft = track.scrollWidth;
 
     const handleOnDown = (e: MouseEvent | TouchEvent) => {
       const clientX = "clientX" in e ? e.clientX : e.touches[0].clientX;
@@ -36,16 +30,14 @@ const ImageTrack: React.FC = () => {
 
     const handleOnUp = () => {
       track.dataset.mouseDownAt = "0";
-      track.dataset.prevPercentage = track.dataset.percentage || "0";
+      track.dataset.prevPercentage = percentage.toString();
     };
 
     const handleOnMove = (e: MouseEvent | TouchEvent | WheelEvent) => {
       let nextPercentage: number;
       if (e instanceof WheelEvent) {
         const deltaY = e.deltaY;
-        const prevPercentage = parseFloat(track.dataset.percentage || "0");
-
-        nextPercentage = prevPercentage + (deltaY / window.innerWidth) * -100;
+        nextPercentage = percentage + (deltaY / window.innerWidth) * -100;
 
         if (nextPercentage === 0 || nextPercentage === -100) {
           window.removeEventListener("wheel", handleOnMove as EventListener);
@@ -60,23 +52,17 @@ const ImageTrack: React.FC = () => {
         if (track.dataset.mouseDownAt === "0") return;
 
         const clientX = "clientX" in e ? e.clientX : e.touches[0].clientX;
-
         const mouseDelta =
           parseFloat(track.dataset.mouseDownAt || "0") - clientX;
-
         const maxDelta = window.outerWidth / 2;
-
         const percentage = (mouseDelta / maxDelta) * -100;
-
-        const scalingFactor = 0.3; // Adjust this value as needed
         nextPercentage =
           parseFloat(track.dataset.prevPercentage || "0") +
           percentage * scalingFactor;
       }
-
-      nextPercentage = Math.max(Math.min(nextPercentage, 0), -85);
-
-      track.dataset.percentage = String(nextPercentage);
+      //chnage the negative number to controll how far back you can go.
+      nextPercentage = Math.max(Math.min(nextPercentage, 0), -90);
+      setPercentage(nextPercentage);
 
       track.animate(
         { transform: `translate(${nextPercentage}%, -50%)` },
@@ -94,12 +80,11 @@ const ImageTrack: React.FC = () => {
 
     const handleMouseDown = (e: MouseEvent) => handleOnDown(e);
     const handleTouchStart = (e: TouchEvent) => handleOnDown(e);
-
     const handleMouseUp = () => handleOnUp();
     const handleTouchEnd = () => handleOnUp();
-
     const handleMouseMove = (e: MouseEvent) => handleOnMove(e);
     const handleTouchMove = (e: TouchEvent) => handleOnMove(e);
+    const handleWheel = (e: WheelEvent) => handleOnMove(e);
 
     window.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("touchstart", handleTouchStart);
@@ -107,10 +92,7 @@ const ImageTrack: React.FC = () => {
     window.addEventListener("touchend", handleTouchEnd);
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("touchmove", handleTouchMove);
-
-    window.addEventListener("wheel", handleOnMove as EventListener, {
-      passive: false,
-    });
+    window.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
       window.removeEventListener("mousedown", handleMouseDown);
@@ -119,16 +101,15 @@ const ImageTrack: React.FC = () => {
       window.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("touchmove", handleTouchMove);
-
-      window.removeEventListener("wheel", handleOnMove as EventListener);
+      window.removeEventListener("wheel", handleWheel);
     };
-  }, []);
+  }, [images, imageWidth, gapWidth, scalingFactor, percentage]);
 
   return (
     <div
       ref={trackRef}
       id="ImageTrack"
-      className="flex gap-[4vmin] absolute left-[10%] top-[40%] transform translate-y-[-50%] select-none"
+      className={`flex gap-[${gapWidth}vmin] absolute left-[10%] top-[40%] transform translate-y-[-50%] select-none`}
       data-mouse-down-at="0"
       data-prev-percentage="0"
     >
@@ -137,8 +118,11 @@ const ImageTrack: React.FC = () => {
           key={index}
           src={image}
           alt={`image ${index + 1}`}
-          className="image w-[40vmin] h-[56vmin] object-cover object-center"
+          className={`image w-[${imageWidth}vmin] h-[56vmin] object-cover object-center`}
           draggable="false"
+          onError={(e) => {
+            console.error("Image failed to load", e);
+          }}
         />
       ))}
     </div>
