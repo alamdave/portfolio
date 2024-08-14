@@ -27,7 +27,7 @@ const Home: React.FC = () => {
         <h1 className="font-titlef text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-10xl mb-10">
           DEVELOPER
         </h1>
-        <ImageTrack images={images} className="my-11" />
+        <ImageTrack images={images} />
         {/* Other content */}
       </section>
     </MainLayout>

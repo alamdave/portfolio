@@ -109,7 +109,7 @@ const ImageTrack: React.FC<ImageTrackProps> = ({
     <div
       ref={trackRef}
       id="ImageTrack"
-      className={`flex gap-[${gapWidth}vmin] absolute left-[10%] top-[40%] transform translate-y-[-50%] select-none`}
+      className={`flex gap-[4vmin] absolute left-[10%] top-[40%] transform translate-y-[-50%] select-none`}
       data-mouse-down-at="0"
       data-prev-percentage="0"
     >
@@ -118,7 +118,7 @@ const ImageTrack: React.FC<ImageTrackProps> = ({
           key={index}
           src={image}
           alt={`image ${index + 1}`}
-          className={`image w-[${imageWidth}vmin] h-[56vmin] object-cover object-center`}
+          className={`image w-[40vmin] h-[56vmin] object-cover object-center`}
           draggable="false"
           onError={(e) => {
             console.error("Image failed to load", e);
