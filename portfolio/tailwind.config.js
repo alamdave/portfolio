@@ -4,6 +4,10 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      colors: {
+        customBlack: "#141414",
+        customWhite: "#fcfce4",
+      },
       fontFamily: {
         titlef: ["Clash Display", "sans-serif"],
         bodyf: ["Public Sans", "sans-serif"],

@@ -1,4 +1,5 @@
 import React from "react";
+import Title from "../components/Title";
 import MainLayout from "../layouts/MainLayout";
 import ImageTrack from "../components/ImageTrack";
 
@@ -15,22 +16,12 @@ const images = [
 
 const Home: React.FC = () => {
   return (
-    <MainLayout>
+    <div>
       {/* Main content for the Home page */}
-      <section className="container mx-auto p-4">
-        <h1 className="font-titlef text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-10xl mb-[]">
-          FULL-STACK
-        </h1>
-        <h1 className="font-titlef text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-10xl mb-10">
-          DEVELOPER
-        </h1>
-        <h1 className="font-titlef text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-10xl mb-10">
-          DEVELOPER
-        </h1>
-        <ImageTrack images={images} />
-        {/* Other content */}
+      <section className="container">
+        <Title />
       </section>
-    </MainLayout>
+    </div>
   );
 };
 

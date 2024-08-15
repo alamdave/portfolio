@@ -5,6 +5,7 @@ interface ImageTrackProps {
   imageWidth?: number;
   gapWidth?: number;
   scalingFactor?: number;
+  duration?: number;
 }
 
 const ImageTrack: React.FC<ImageTrackProps> = ({
@@ -12,13 +13,16 @@ const ImageTrack: React.FC<ImageTrackProps> = ({
   imageWidth = 40,
   gapWidth = 4,
   scalingFactor = 0.3,
+  duration = 600,
 }) => {
   const trackRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
+    const container = containerRef.current;
     const track = trackRef.current;
-    if (!track) return;
+    if (!track || !container) return;
 
     const totalWidth = (imageWidth + gapWidth) * images.length - gapWidth;
     track.style.width = `${totalWidth}vmin`;
@@ -46,7 +50,7 @@ const ImageTrack: React.FC<ImageTrackProps> = ({
             window.addEventListener("wheel", handleOnMove as EventListener, {
               passive: false,
             });
-          }, 1200);
+          }, duration);
         }
       } else {
         if (track.dataset.mouseDownAt === "0") return;
@@ -61,19 +65,21 @@ const ImageTrack: React.FC<ImageTrackProps> = ({
           percentage * scalingFactor;
       }
       //chnage the negative number to controll how far back you can go.
-      nextPercentage = Math.max(Math.min(nextPercentage, 0), -90);
+      nextPercentage = Math.max(Math.min(nextPercentage, 0), -85);
       setPercentage(nextPercentage);
 
+      const easing = "cubic-bezier(0.25, 0.1, 0.25, 1)";
+
       track.animate(
-        { transform: `translate(${nextPercentage}%, -50%)` },
-        { duration: 1500, fill: "forwards" }
+        { transform: `translate(${nextPercentage}%)` },
+        { duration: duration, fill: "forwards", easing: easing }
       );
 
       const images = track.getElementsByClassName("image");
       for (const image of images) {
         (image as HTMLElement).animate(
           { objectPosition: `${100 + nextPercentage}% center` },
-          { duration: 1500, fill: "forwards" }
+          { duration: duration, fill: "forwards", easing: easing }
         );
       }
     };
@@ -86,45 +92,49 @@ const ImageTrack: React.FC<ImageTrackProps> = ({
     const handleTouchMove = (e: TouchEvent) => handleOnMove(e);
     const handleWheel = (e: WheelEvent) => handleOnMove(e);
 
-    window.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("touchstart", handleTouchStart);
-    window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("touchend", handleTouchEnd);
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("touchmove", handleTouchMove);
-    window.addEventListener("wheel", handleWheel, { passive: false });
+    container.addEventListener("mousedown", handleMouseDown);
+    container.addEventListener("touchstart", handleTouchStart);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("touchend", handleTouchEnd);
+    container.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener("touchmove", handleTouchMove);
+    container.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
-      window.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("touchend", handleTouchEnd);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("wheel", handleWheel);
+      container.removeEventListener("mousedown", handleMouseDown);
+      container.removeEventListener("touchstart", handleTouchStart);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("touchend", handleTouchEnd);
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("touchmove", handleTouchMove);
+      container.removeEventListener("wheel", handleWheel);
     };
-  }, [images, imageWidth, gapWidth, scalingFactor, percentage]);
+  }, [images, imageWidth, gapWidth, scalingFactor, percentage, duration]);
 
   return (
-    <div
-      ref={trackRef}
-      id="ImageTrack"
-      className={`flex gap-[4vmin] absolute left-[10%] top-[40%] transform translate-y-[-50%] select-none`}
-      data-mouse-down-at="0"
-      data-prev-percentage="0"
-    >
-      {images.map((image, index) => (
-        <img
-          key={index}
-          src={image}
-          alt={`image ${index + 1}`}
-          className={`image w-[40vmin] h-[56vmin] object-cover object-center`}
-          draggable="false"
-          onError={(e) => {
-            console.error("Image failed to load", e);
-          }}
-        />
-      ))}
+    <div ref={containerRef} className="relative p">
+      <div
+        ref={trackRef}
+        id="ImageTrack"
+        className={`flex gap-[4vmin] relative left-[30%] top-10 transform translate-y-0 select-none`}
+        style={{ gap: `${gapWidth}vmin` }}
+        data-mouse-down-at="0"
+        data-prev-percentage="0"
+      >
+        {images.map((image, index) => (
+          <img
+            key={index}
+            src={image}
+            alt={`image ${index + 1}`}
+            className="image h-[56vmin] object-cover object-center"
+            style={{ width: `${imageWidth}vmin` }}
+            draggable="false"
+            onError={(e) => {
+              console.error("Image failed to load", e);
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 };

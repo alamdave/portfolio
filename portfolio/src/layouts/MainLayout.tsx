@@ -1,6 +1,6 @@
 import React from "react";
-import Navbar from "../components/SideNav";
 import Footer from "../components/Footer";
+import Header from "../components/Header";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -8,19 +8,12 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Navbar */}
-      <header>
-        <Navbar />
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-grow">{children}</main>
-
-      {/* Footer */}
-      <footer>
-        <Footer />
-      </footer>
+    <div className="flex flex-col min-h-screen py-12">
+      <header />
+      <div className="">
+        {/* Main Content */}
+        <main className="">{children}</main>
+      </div>
     </div>
   );
 };

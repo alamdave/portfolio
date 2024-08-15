@@ -15,13 +15,15 @@
 /* Example: Global font settings */
 body {
   font-family: "Inter", sans-serif;
-  background-color: #f8fafc; /* Tailwind's gray-100 */
-  color: #1f2937; /* Tailwind's gray-800 */
+  background-color: #141414; /* Tailwind's gray-50 */
+  color: #f8fafc; /* Tailwind's gray-800 */
+
+  user-select: none; /* Prevents text selection */
 }
 
 /* Custom global utility classes (if needed) */
 .container {
-  max-width: 1200px;
+  max-width: 1920px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -33,10 +35,11 @@ body {
 
 /* Example: Global link styles */
 a {
-  color: #3b82f6; /* Tailwind's blue-500 */
+  color: #f8fafc; /* Tailwind's blue-500 */
   text-decoration: none;
 }
 
 a:hover {
+  background-color: #141414;
   text-decoration: underline;
 }
