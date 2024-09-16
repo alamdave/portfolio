@@ -52,10 +52,10 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Footer Bottom Section */}
-        <div className="mt-8 text-center pt-4">
-          <p className="text-sm text-gray-400">
-            &copy; {new Date().getFullYear()} Your Company. All rights reserved.
-          </p>
+        <div className="mt-8 text-center pt-2">
+          <h1 className="font-titlef text-[12vw] sm:text-[12vw] md:text-[12vw] lg:text-[11vw] leading-none truncate text-customBlack whitespace-nowrap tracking-tight sm:tracking-normal md:tracking-wide lg:tracking-wider">
+            GET IN TOUCH
+          </h1>
         </div>
       </div>
     </footer>
