@@ -1,12 +1,7 @@
 import React from "react";
 
 const About: React.FC = () => {
-  return (
-    <div>
-      <h1>About Me</h1>
-      <p>This is the about section of my portfolio.</p>
-    </div>
-  );
+  return <div className="relative min-h-screen overflow-hidden"></div>;
 };
 
 export default About;

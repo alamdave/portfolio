@@ -16,9 +16,11 @@ const images = [
 
 const Home: React.FC = () => {
   return (
-    <div>
-      <section className="container">
+    <div className="min-h-screen">
+      <section className="container h-screen">
         <Title />
+      </section>
+      <section className="container h-screen">
         <Bio />
       </section>
       <section className="image-track-section">

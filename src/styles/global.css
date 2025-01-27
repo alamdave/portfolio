@@ -5,37 +5,29 @@
 
 /* Global resets or custom global styles can go here */
 
-/* Example: Reset margin and padding */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Example: Global font settings */
 body {
   font-family: "Inter", sans-serif;
-  background-color: #141414; /* Tailwind's gray-50 */
-  color: #f8fafc; /* Tailwind's gray-800 */
+  background-color: #141414;
+  color: #f8fafc;
 
   user-select: none; /* Prevents text selection */
 }
 
-/* Custom global utility classes (if needed) */
+/* Custom global utility classes */
 .container {
-  max-width: 1920px;
   margin: 0 auto;
   padding: 0 1rem;
 }
 
-/* Example: Utility class for section padding */
-.section-padding {
-  padding: 4rem 1rem;
-}
-
 /* Example: Global link styles */
 a {
-  color: #f8fafc; /* Tailwind's blue-500 */
+  color: #f8fafc;
   text-decoration: none;
 }
 
